@@ -15,9 +15,11 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitConfiguration {
     private static final Logger logger = LogManager.getLogger();
 
+    private final String rabbitMqName = "test-RabbitMQ";
+
     @Bean
     public ConnectionFactory connectionFactory() {
-        CachingConnectionFactory connectionFactory = new CachingConnectionFactory("localhost");
+        CachingConnectionFactory connectionFactory = new CachingConnectionFactory(rabbitMqName);
         return connectionFactory;
     }
 
