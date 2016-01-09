@@ -35,6 +35,6 @@ public class RabbitConfiguration {
 
     @Bean
     public Queue myQueue1() {
-        return new Queue("queue1");
+        return new Queue("queue1", false);
     }
 }

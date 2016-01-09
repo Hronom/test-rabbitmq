@@ -12,7 +12,16 @@ public class RabbitMqListener {
     private static final Logger logger = LogManager.getLogger();
 
     @RabbitListener(queues = "queue1")
-    public void processQueue1(String message) {
-        logger.info("Received from queue 1: " + message);
+    public String processQueue1(String message) {
+        logger.info("Received from \"queue1\" message: \"" + message + "\"");
+        try {
+            // Emulate work.
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        String processedMessage = message + " - processed.";
+        logger.info("Send to \"queue1\" processed message: \"" + processedMessage + "\"");
+        return processedMessage;
     }
 }

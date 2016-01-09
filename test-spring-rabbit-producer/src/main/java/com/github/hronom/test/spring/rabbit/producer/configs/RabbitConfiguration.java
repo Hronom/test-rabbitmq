@@ -30,11 +30,13 @@ public class RabbitConfiguration {
 
     @Bean
     public RabbitTemplate rabbitTemplate() {
-        return new RabbitTemplate(connectionFactory());
+        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory());
+        rabbitTemplate.setReplyTimeout(-1);
+        return rabbitTemplate;
     }
 
     @Bean
     public Queue myQueue1() {
-        return new Queue("queue1");
+        return new Queue("queue1", false);
     }
 }
