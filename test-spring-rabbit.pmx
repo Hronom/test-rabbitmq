@@ -1,0 +1,29 @@
+---
+name: test-spring-rabbit
+description: ''
+keywords: ''
+type: Default
+documentation: ''
+images:
+- name: rabbitmq
+  source: rabbitmq:3-management
+  category: rabbitmq:3-management
+  type: Default
+  ports:
+  - host_port: '8080'
+    container_port: '15672'
+    proto: TCP
+- name: hronom_test-spring-rabbit-producer
+  source: hronom/test-spring-rabbit-producer:1.0.0
+  category: producers
+  type: Default
+  links:
+  - service: rabbitmq
+    alias: test-RabbitMQ
+- name: hronom_test-spring-rabbit-consumer
+  source: hronom/test-spring-rabbit-consumer:1.0.0
+  category: consumers
+  type: Default
+  links:
+  - service: rabbitmq
+    alias: test-RabbitMQ
