@@ -12,7 +12,7 @@ import org.springframework.stereotype.Controller;
 import java.util.Random;
 
 @Controller
-public class ProduceController {
+public class ProducerController {
     private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger();
 
     private final Random random = new Random();
