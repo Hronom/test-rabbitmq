@@ -4,15 +4,15 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.hronom</groupId>
-    <artifactId>test-spring-rabbit</artifactId>
+    <artifactId>test-rabbitmq</artifactId>
     <version>1.0.0</version>
     <modules>
-        <module>test-spring-rabbit-producer</module>
-        <module>test-spring-rabbit-consumer</module>
+        <module>test-rabbitmq-spring-producer</module>
+        <module>test-rabbitmq-spring-consumer</module>
     </modules>
     <packaging>pom</packaging>
 
-    <name>test-spring-rabbit</name>
+    <name>test-rabbitmq</name>
     <url>http://maven.apache.org</url>
 
     <prerequisites>

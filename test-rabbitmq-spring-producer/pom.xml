@@ -8,10 +8,10 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>test-spring-rabbit-producer</artifactId>
+    <artifactId>test-rabbitmq-spring-producer</artifactId>
     <packaging>jar</packaging>
 
-    <name>test-spring-rabbit-producer</name>
+    <name>test-rabbitmq-spring-producer</name>
     <url>http://maven.apache.org</url>
 
     <dependencies>
