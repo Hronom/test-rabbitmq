@@ -60,12 +60,15 @@ public class RabbitmqProducer implements AutoCloseable {
 
         channel.basicPublish("", requestQueueName, props, message.getBytes(StandardCharsets.UTF_8));
 
+        String response = null;
         while (true) {
             QueueingConsumer.Delivery delivery = consumer.nextDelivery();
             if (delivery.getProperties().getCorrelationId().equals(corrId)) {
-                return deserialize(delivery.getBody());
+                response = new String(delivery.getBody());
+                break;
             }
         }
+        return response;
     }
 
     private Object deserialize(byte[] data) throws IOException, ClassNotFoundException {

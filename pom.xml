@@ -10,6 +10,7 @@
         <module>test-rabbitmq-spring-producer</module>
         <module>test-rabbitmq-spring-consumer</module>
         <module>test-rabbitmq-producer</module>
+        <module>test-rabbitmq-consumer</module>
     </modules>
     <packaging>pom</packaging>
 
