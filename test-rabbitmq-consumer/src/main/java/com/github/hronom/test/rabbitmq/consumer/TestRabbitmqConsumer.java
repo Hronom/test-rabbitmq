@@ -36,6 +36,7 @@ public class TestRabbitmqConsumer {
 
         Connection connection = factory.newConnection();
         Channel channel = connection.createChannel();
+        channel.basicQos(1); // Per consumer limit
 
         //replyQueueName = channel.queueDeclare().getQueue();
         channel.queueDeclare(requestQueueName, false, false, false, null);
@@ -49,15 +50,20 @@ public class TestRabbitmqConsumer {
             QueueingConsumer.Delivery delivery = consumer.nextDelivery();
 
             AMQP.BasicProperties props = delivery.getProperties();
-            AMQP.BasicProperties replyProps = new AMQP.BasicProperties.Builder()
-                .correlationId(props.getCorrelationId()).build();
-
             String message = new String(delivery.getBody());
 
             System.out.println("[.] " + message);
-            String response = "Processed: " + message;
 
-            channel.basicPublish("", props.getReplyTo(), replyProps, response.getBytes());
+            // Reply if needed.
+            if (props.getReplyTo() != null) {
+                AMQP.BasicProperties replyProps =
+                    new AMQP
+                        .BasicProperties.Builder()
+                        .correlationId(props.getCorrelationId())
+                        .build();
+                String response = "Processed: " + message;
+                channel.basicPublish("", props.getReplyTo(), replyProps, response.getBytes());
+            }
 
             channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
 
