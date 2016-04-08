@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 public class TestRabbitmqConsumer {
@@ -42,7 +43,7 @@ public class TestRabbitmqConsumer {
         consumer = new QueueingConsumer(channel);
         channel.basicConsume(requestQueueName, false, consumer);
 
-        System.out.println(" [x] Awaiting RPC requests");
+        System.out.println("[x] Awaiting RPC requests");
 
         while (true) {
             QueueingConsumer.Delivery delivery = consumer.nextDelivery();
@@ -53,12 +54,14 @@ public class TestRabbitmqConsumer {
 
             String message = new String(delivery.getBody());
 
-            System.out.println(" [.] fib(" + message + ")");
+            System.out.println("[.] " + message);
             String response = "Processed: " + message;
 
             channel.basicPublish("", props.getReplyTo(), replyProps, response.getBytes());
 
             channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+
+            Thread.sleep(TimeUnit.SECONDS.toMillis(3));
         }
     }
 }
