@@ -1,4 +1,4 @@
-package com.github.hronom.test.rabbitmq.producer;
+package com.github.hronom.test.rabbitmq.rpc.producer;
 
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
@@ -12,7 +12,7 @@ import java.io.ObjectInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
-public class RabbitmqProducer implements AutoCloseable {
+public class RabbitmqRpcProducer implements AutoCloseable {
     private final String requestQueueName = "test_queue";
 
     private final String rabbitMqHostname = "localhost";
@@ -26,7 +26,7 @@ public class RabbitmqProducer implements AutoCloseable {
     private final String replyQueueName;
     private final QueueingConsumer consumer;
 
-    public RabbitmqProducer() throws Exception {
+    public RabbitmqRpcProducer() throws Exception {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost(rabbitMqHostname);
         factory.setPort(rabbitMqPort);

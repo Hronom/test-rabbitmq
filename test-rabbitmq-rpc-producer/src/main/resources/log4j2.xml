@@ -4,7 +4,7 @@
         <Console name="console.default" target="SYSTEM_OUT">
             <PatternLayout pattern="%d{HH:mm:ss} %p [%t] [%c{1}(%M:%L)] - %m%n" charset="UTF-8"/>
         </Console>
-        <RollingFile name="file.default" fileName="logs/test-rabbitmq-producer.log"
+        <RollingFile name="file.default" fileName="logs/test-rabbitmq-rpc-producer.log"
                      filePattern="logs/$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.log.gz">
             <PatternLayout pattern="%d{HH:mm:ss} %p [%t] [%c{1}(%M:%L)] - %m%n" charset="UTF-8"/>
             <Policies>
