@@ -71,6 +71,10 @@ public class RabbitmqProducer implements AutoCloseable {
         return response;
     }
 
+    public String getRequestQueueName() {
+        return requestQueueName;
+    }
+
     private Object deserialize(byte[] data) throws IOException, ClassNotFoundException {
         ByteArrayInputStream in = new ByteArrayInputStream(data);
         ObjectInputStream is = new ObjectInputStream(in);
