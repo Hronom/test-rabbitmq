@@ -34,7 +34,7 @@ public class RabbitmqRpcProducer implements AutoCloseable {
         factory.setPassword(rabbitMqPassword);
         connection = factory.newConnection();
         channel = connection.createChannel();
-
+        channel.queueDeclare(requestQueueName, false, false, false, null);
         replyQueueName = channel.queueDeclare().getQueue();
         consumer = new QueueingConsumer(channel);
         channel.basicConsume(replyQueueName, true, consumer);

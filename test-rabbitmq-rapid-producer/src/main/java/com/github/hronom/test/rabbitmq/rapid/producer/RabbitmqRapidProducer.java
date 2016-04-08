@@ -32,6 +32,7 @@ public class RabbitmqRapidProducer implements AutoCloseable {
         factory.setPassword(rabbitMqPassword);
         connection = factory.newConnection();
         channel = connection.createChannel();
+        channel.queueDeclare(requestQueueName, false, false, false, null);
     }
 
     @Override
