@@ -1,4 +1,4 @@
-package com.github.hronom.test.spring.rabbit.consumer.controllers;
+package com.github.hronom.test.rabbitmq.spring.consumer.controllers;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -8,18 +8,20 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class ConsumerController {
     private static final Logger logger = LogManager.getLogger();
+    private final String queueName = "test_queue";
 
-    @RabbitListener(containerFactory="myRabbitListenerContainerFactory", queues = "queue1")
-    public String processQueue1(String message) {
-        logger.info("Received from \"queue1\" message: \"" + message + "\"");
+    @RabbitListener(containerFactory = "myRabbitListenerContainerFactory", queues = queueName)
+    public String processQueue(String message) {
+        logger.info("Received from \"" + queueName + "\" message: \"" + message + "\"");
         try {
             // Emulate work.
             Thread.sleep(3000);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            logger.error(e);
         }
         String processedMessage = message + " - processed.";
-        logger.info("Send to \"queue1\" processed message: \"" + processedMessage + "\"");
+        logger
+            .info("Send to \"" + queueName + "\" processed message: \"" + processedMessage + "\"");
         return processedMessage;
     }
 }

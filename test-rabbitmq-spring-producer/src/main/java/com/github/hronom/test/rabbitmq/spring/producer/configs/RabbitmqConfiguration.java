@@ -1,4 +1,4 @@
-package com.github.hronom.test.spring.rabbit.producer.configs;
+package com.github.hronom.test.rabbitmq.spring.producer.configs;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,14 +12,23 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class RabbitConfiguration {
+public class RabbitmqConfiguration {
     private static final Logger logger = LogManager.getLogger();
 
-    private final String rabbitMqName = "test-RabbitMQ";
+    private final String requestQueueName = "test_queue";
+
+    private final String rabbitMqHostname = "localhost";
+    private final int rabbitMqPort = 5672;
+
+    private final String rabbitMqUsername = "guest";
+    private final String rabbitMqPassword = "guest";
 
     @Bean
     public ConnectionFactory connectionFactory() {
-        CachingConnectionFactory connectionFactory = new CachingConnectionFactory(rabbitMqName);
+        CachingConnectionFactory connectionFactory =
+            new CachingConnectionFactory(rabbitMqHostname, rabbitMqPort);
+        connectionFactory.setUsername(rabbitMqUsername);
+        connectionFactory.setPassword(rabbitMqPassword);
         return connectionFactory;
     }
 
@@ -36,7 +45,7 @@ public class RabbitConfiguration {
     }
 
     @Bean
-    public Queue myQueue1() {
-        return new Queue("queue1", false);
+    public Queue queue() {
+        return new Queue(requestQueueName, false);
     }
 }

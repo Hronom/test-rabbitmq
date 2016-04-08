@@ -1,11 +1,9 @@
-package com.github.hronom.test.spring.rabbit.producer.configs;
+package com.github.hronom.test.rabbitmq.spring.consumer.configs;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.annotation.EnableScheduling;
 
 @Configuration
 @EnableAsync
-@EnableScheduling
 public class AppConfig {
 }
