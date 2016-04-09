@@ -46,7 +46,6 @@ public class TestRabbitmqRpcConsumer {
         Channel channel = connection.createChannel();
         channel.basicQos(1); // Per consumer limit
 
-        //replyQueueName = channel.queueDeclare().getQueue();
         channel.queueDeclare(requestQueueName, false, false, false, null);
 
         consumer = new QueueingConsumer(channel);
@@ -77,7 +76,7 @@ public class TestRabbitmqRpcConsumer {
 
             channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
 
-            Thread.sleep(TimeUnit.SECONDS.toMillis(3));
+            //Thread.sleep(TimeUnit.SECONDS.toMillis(3));
         }
     }
 }

@@ -18,7 +18,13 @@ public class TestRabbitmqRpcProducer {
         final RandomStringGenerator generator = new RandomStringGenerator();
 
         try (RabbitmqRpcProducer rpcProducer = new RabbitmqRpcProducer()) {
+            int countOfSendedMessages = 0;
+            long totalSendTime = 0;
+
+            long timeOfLastUpdate = 0;
             while (true) {
+                long sendingStartTime = System.currentTimeMillis();
+
                 logger.info("Generate random string...");
                 TextPojo textPojo = new TextPojo();
                 textPojo.text = generator.generateFromPattern(stringPattern);
@@ -32,9 +38,18 @@ public class TestRabbitmqRpcProducer {
                 } catch (Exception exception) {
                     logger.fatal("Fail!", exception);
                 }
-            }
 
-            //executor.awaitTermination(24, TimeUnit.DAYS);
+                long currentTime = System.currentTimeMillis();
+
+                long sendTime = currentTime - sendingStartTime;
+                totalSendTime += sendTime;
+
+                countOfSendedMessages++;
+                if (currentTime - timeOfLastUpdate > 1000) {
+                    timeOfLastUpdate = currentTime;
+                    System.out.println("Average send time: " + (totalSendTime / countOfSendedMessages) + " ms.");
+                }
+            }
         } catch (Exception exception) {
             logger.fatal("Fail!", exception);
         }
