@@ -1,5 +1,7 @@
 package com.github.hronom.test.rabbitmq.rapid.producer;
 
+import com.github.hronom.test.rabbitmq.common.pojos.TextPojo;
+
 import net.moznion.random.string.RandomStringGenerator;
 
 import org.apache.logging.log4j.LogManager;
@@ -23,10 +25,11 @@ public class TestRabbitmqRapidProducer {
         try (RabbitmqRapidProducer rapidProducer = new RabbitmqRapidProducer()) {
             while (true) {
                 logger.info("Generate random string...");
-                String msg = generator.generateFromPattern(stringPattern);
+                TextPojo textPojo = new TextPojo();
+                textPojo.text = generator.generateFromPattern(stringPattern);
                 try {
-                    logger.info("Emit to \"" + rapidProducer.getRequestQueueName() + "\" message: \"" + msg + "\"");
-                    rapidProducer.post(msg);
+                    logger.info("Emit to \"" + rapidProducer.getRequestQueueName() + "\" message: \"" + textPojo.text + "\"");
+                    rapidProducer.post(textPojo);
                     Thread.sleep(TimeUnit.SECONDS.toMillis(1));
                 } catch (Exception exception) {
                     logger.fatal("Fail!", exception);

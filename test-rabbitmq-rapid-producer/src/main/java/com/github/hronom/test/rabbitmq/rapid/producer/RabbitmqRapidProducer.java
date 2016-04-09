@@ -1,5 +1,7 @@
 package com.github.hronom.test.rabbitmq.rapid.producer;
 
+import com.github.hronom.test.rabbitmq.common.pojos.TextPojo;
+import com.github.hronom.test.rabbitmq.common.utils.SerializationUtils;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -40,7 +42,7 @@ public class RabbitmqRapidProducer implements AutoCloseable {
         connection.close();
     }
 
-    public void post(String message) throws Exception {
+    public void post(TextPojo textPojo) throws Exception {
         String corrId = UUID.randomUUID().toString();
 
         AMQP.BasicProperties props =
@@ -48,11 +50,11 @@ public class RabbitmqRapidProducer implements AutoCloseable {
                 .BasicProperties
                 .Builder()
                 .correlationId(corrId)
-                .contentEncoding(StandardCharsets.UTF_8.name())
-                .contentType("text/plain")
+                /*.contentEncoding(StandardCharsets.UTF_8.name())
+                .contentType("text/plain")*/
                 .build();
 
-        channel.basicPublish("", requestQueueName, props, message.getBytes(StandardCharsets.UTF_8));
+        channel.basicPublish("", requestQueueName, props, SerializationUtils.serialize(textPojo));
     }
 
     public String getRequestQueueName() {

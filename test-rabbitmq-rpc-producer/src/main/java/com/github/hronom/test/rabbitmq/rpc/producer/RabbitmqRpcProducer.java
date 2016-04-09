@@ -54,8 +54,8 @@ public class RabbitmqRpcProducer implements AutoCloseable {
                 .Builder()
                 .correlationId(corrId)
                 .replyTo(replyQueueName)
-                .contentEncoding(StandardCharsets.UTF_8.name())
-                .contentType("text/plain")
+                /*.contentEncoding(StandardCharsets.UTF_8.name())
+                .contentType("text/plain")*/
                 .build();
 
         byte[] dataOut = SerializationUtils.serialize(textPojo);

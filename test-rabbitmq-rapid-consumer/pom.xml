@@ -8,10 +8,10 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>test-rabbitmq-consumer</artifactId>
+    <artifactId>test-rabbitmq-rapid-consumer</artifactId>
     <packaging>jar</packaging>
 
-    <name>test-rabbitmq-consumer</name>
+    <name>test-rabbitmq-rapid-consumer</name>
     <url>http://maven.apache.org</url>
 
     <properties>
@@ -19,6 +19,11 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>com.github.hronom</groupId>
+            <artifactId>test-rabbitmq-common</artifactId>
+            <version>1.0.0</version>
+        </dependency>
         <!-- Random-string -->
         <dependency>
             <groupId>net.moznion</groupId>
@@ -79,7 +84,7 @@
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib</classpathPrefix>
                             <classpathLayoutType>simple</classpathLayoutType>
-                            <mainClass>com.github.hronom.test.rabbitmq.consumer.TestRabbitmqConsumer</mainClass>
+                            <mainClass>com.github.hronom.test.rabbitmq.rapid.consumer.TestRabbitmqRapidConsumer</mainClass>
                         </manifest>
                         <manifestEntries>
                             <Version>${project.version}</Version>
