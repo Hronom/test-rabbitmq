@@ -1,6 +1,5 @@
 package com.github.hronom.test.rabbitmq.consumer;
 
-import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -44,29 +43,13 @@ public class TestRabbitmqConsumer {
         consumer = new QueueingConsumer(channel);
         channel.basicConsume(requestQueueName, false, consumer);
 
-        System.out.println("[x] Awaiting RPC requests");
+        System.out.println("[x] Awaiting requests");
 
         while (true) {
             QueueingConsumer.Delivery delivery = consumer.nextDelivery();
-
-            AMQP.BasicProperties props = delivery.getProperties();
             String message = new String(delivery.getBody());
-
             System.out.println("[.] " + message);
-
-            // Reply if needed.
-            if (props.getReplyTo() != null) {
-                AMQP.BasicProperties replyProps =
-                    new AMQP
-                        .BasicProperties.Builder()
-                        .correlationId(props.getCorrelationId())
-                        .build();
-                String response = "Processed: " + message;
-                channel.basicPublish("", props.getReplyTo(), replyProps, response.getBytes());
-            }
-
             channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
-
             Thread.sleep(TimeUnit.SECONDS.toMillis(3));
         }
     }

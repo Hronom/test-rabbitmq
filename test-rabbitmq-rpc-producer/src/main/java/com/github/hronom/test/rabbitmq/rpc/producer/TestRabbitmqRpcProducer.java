@@ -1,5 +1,8 @@
 package com.github.hronom.test.rabbitmq.rpc.producer;
 
+import com.github.hronom.test.rabbitmq.common.pojos.TextPojo;
+import com.github.hronom.test.rabbitmq.common.pojos.TokenizedTextPojo;
+
 import net.moznion.random.string.RandomStringGenerator;
 
 import org.apache.logging.log4j.LogManager;
@@ -17,13 +20,15 @@ public class TestRabbitmqRpcProducer {
         try (RabbitmqRpcProducer rpcProducer = new RabbitmqRpcProducer()) {
             while (true) {
                 logger.info("Generate random string...");
-                String msg = generator.generateFromPattern(stringPattern);
+                TextPojo textPojo = new TextPojo();
+                textPojo.text = generator.generateFromPattern(stringPattern);
                 try {
-                    logger.info("Emit to \"" + rpcProducer.getRequestQueueName() + "\" message: \"" + msg + "\"");
-                    Object obj = rpcProducer.call(msg);
-                    String resultStr = (String) obj;
+                    logger.info(
+                        "Emit to \"" + rpcProducer.getRequestQueueName() + "\" message: \"" + textPojo.text +
+                        "\"");
+                    TokenizedTextPojo tokenizedTextPojo = rpcProducer.call(textPojo);
                     logger.info("In thread " + Thread.currentThread().getId() + " receive: \"" +
-                                resultStr.toString() + "\"");
+                                tokenizedTextPojo.words.toString() + "\"");
                 } catch (Exception exception) {
                     logger.fatal("Fail!", exception);
                 }

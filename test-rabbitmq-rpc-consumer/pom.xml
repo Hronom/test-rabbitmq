@@ -8,10 +8,10 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>test-rabbitmq-rpc-producer</artifactId>
+    <artifactId>test-rabbitmq-rpc-consumer</artifactId>
     <packaging>jar</packaging>
 
-    <name>test-rabbitmq-rpc-producer</name>
+    <name>test-rabbitmq-rpc-consumer</name>
     <url>http://maven.apache.org</url>
 
     <properties>
@@ -84,7 +84,7 @@
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib</classpathPrefix>
                             <classpathLayoutType>simple</classpathLayoutType>
-                            <mainClass>com.github.hronom.test.rabbitmq.rpc.producer.TestRabbitmqRpcProducer</mainClass>
+                            <mainClass>com.github.hronom.test.rabbitmq.rpc.consumer.TestRabbitmqRpcConsumer</mainClass>
                         </manifest>
                         <manifestEntries>
                             <Version>${project.version}</Version>

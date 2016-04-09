@@ -1,14 +1,14 @@
 package com.github.hronom.test.rabbitmq.rpc.producer;
 
+import com.github.hronom.test.rabbitmq.common.utils.SerializationUtils;
+import com.github.hronom.test.rabbitmq.common.pojos.TextPojo;
+import com.github.hronom.test.rabbitmq.common.pojos.TokenizedTextPojo;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.QueueingConsumer;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
@@ -45,7 +45,7 @@ public class RabbitmqRpcProducer implements AutoCloseable {
         connection.close();
     }
 
-    public Object call(String message) throws Exception {
+    public TokenizedTextPojo call(TextPojo textPojo) throws Exception {
         String corrId = UUID.randomUUID().toString();
 
         AMQP.BasicProperties props =
@@ -58,13 +58,15 @@ public class RabbitmqRpcProducer implements AutoCloseable {
                 .contentType("text/plain")
                 .build();
 
-        channel.basicPublish("", requestQueueName, props, message.getBytes(StandardCharsets.UTF_8));
+        byte[] dataOut = SerializationUtils.serialize(textPojo);
+        channel.basicPublish("", requestQueueName, props, dataOut);
 
-        String response = null;
+        TokenizedTextPojo response = null;
         while (true) {
             QueueingConsumer.Delivery delivery = consumer.nextDelivery();
             if (delivery.getProperties().getCorrelationId().equals(corrId)) {
-                response = new String(delivery.getBody());
+                Object object = SerializationUtils.deserialize(delivery.getBody());
+                response = (TokenizedTextPojo) object;
                 break;
             }
         }
@@ -73,11 +75,5 @@ public class RabbitmqRpcProducer implements AutoCloseable {
 
     public String getRequestQueueName() {
         return requestQueueName;
-    }
-
-    private Object deserialize(byte[] data) throws IOException, ClassNotFoundException {
-        ByteArrayInputStream in = new ByteArrayInputStream(data);
-        ObjectInputStream is = new ObjectInputStream(in);
-        return is.readObject();
     }
 }

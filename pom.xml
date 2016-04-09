@@ -7,10 +7,12 @@
     <artifactId>test-rabbitmq</artifactId>
     <version>1.0.0</version>
     <modules>
+        <module>test-rabbitmq-common</module>
         <module>test-rabbitmq-spring-producer</module>
         <module>test-rabbitmq-spring-consumer</module>
         <module>test-rabbitmq-rapid-producer</module>
         <module>test-rabbitmq-rpc-producer</module>
+        <module>test-rabbitmq-rpc-consumer</module>
         <module>test-rabbitmq-consumer</module>
     </modules>
     <packaging>pom</packaging>
