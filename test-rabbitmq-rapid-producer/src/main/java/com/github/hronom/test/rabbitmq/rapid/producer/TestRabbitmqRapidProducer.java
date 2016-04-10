@@ -23,14 +23,39 @@ public class TestRabbitmqRapidProducer {
         final RandomStringGenerator generator = new RandomStringGenerator();
 
         try (RabbitmqRapidProducer rapidProducer = new RabbitmqRapidProducer()) {
+            int totalCountOfSendedMessages = 0;
+            long totalSendTime = 0;
+
+            long timeOfLastUpdate = 0;
+            int countOfMessagesInSec = 0;
+
             while (true) {
-                logger.info("Generate random string...");
+                //logger.info("Generate random string...");
                 TextPojo textPojo = new TextPojo();
                 textPojo.text = generator.generateFromPattern(stringPattern);
                 try {
-                    logger.info("Emit to \"" + rapidProducer.getRequestQueueName() + "\" message: \"" + textPojo.text + "\"");
+                    long sendingStartTime = System.currentTimeMillis();
+
+                    //logger.info("Emit to \"" + rapidProducer.getRequestQueueName() + "\" message: \"" + textPojo.text + "\"");
                     rapidProducer.post(textPojo);
-                    Thread.sleep(TimeUnit.SECONDS.toMillis(1));
+                    //Thread.sleep(TimeUnit.SECONDS.toMillis(1));
+
+                    long currentTime = System.currentTimeMillis();
+
+                    long sendTime = currentTime - sendingStartTime;
+
+                    totalSendTime += sendTime;
+
+                    totalCountOfSendedMessages++;
+                    countOfMessagesInSec++;
+                    if (currentTime - timeOfLastUpdate > TimeUnit.SECONDS.toMillis(1)) {
+                        logger.info("Average send time: " +
+                                    (double) (totalSendTime / totalCountOfSendedMessages) + " ms.");
+                        logger.info("Count of messages in second: " + countOfMessagesInSec);
+
+                        timeOfLastUpdate = currentTime;
+                        countOfMessagesInSec = 0;
+                    }
                 } catch (Exception exception) {
                     logger.fatal("Fail!", exception);
                 }

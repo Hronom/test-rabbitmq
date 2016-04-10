@@ -17,7 +17,7 @@ import java.util.concurrent.TimeoutException;
 public class TestRabbitmqRapidConsumer {
     private static final Logger logger = LogManager.getLogger();
 
-    private static final String requestQueueName = "test_queue";
+    private static final String requestQueueName = "test_rapid_queue";
 
     private static final String rabbitMqHostname = "localhost";
     private static final int rabbitMqPort = 5672;
@@ -35,22 +35,21 @@ public class TestRabbitmqRapidConsumer {
 
         Connection connection = factory.newConnection();
         Channel channel = connection.createChannel();
-        channel.basicQos(1); // Per consumer limit
+        channel.basicQos(1000); // Per consumer limit
 
-        //replyQueueName = channel.queueDeclare().getQueue();
         channel.queueDeclare(requestQueueName, false, false, false, null);
 
         QueueingConsumer consumer = new QueueingConsumer(channel);
         channel.basicConsume(requestQueueName, false, consumer);
 
-        System.out.println("[x] Awaiting requests");
+        logger.info("[x] Awaiting requests");
 
         while (true) {
             QueueingConsumer.Delivery delivery = consumer.nextDelivery();
             TextPojo textPojo = (TextPojo) SerializationUtils.deserialize(delivery.getBody());
-            System.out.println("[.] " + textPojo.text);
+            //logger.info("[.] " + textPojo.text);
             channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
-            Thread.sleep(TimeUnit.SECONDS.toMillis(3));
+            //Thread.sleep(TimeUnit.SECONDS.toMillis(3));
         }
     }
 }

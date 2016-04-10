@@ -15,7 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 public class RabbitmqRapidProducer implements AutoCloseable {
-    private final String requestQueueName = "test_queue";
+    private final String requestQueueName = "test_rapid_queue";;
 
     private final String rabbitMqHostname = "localhost";
     private final int rabbitMqPort = 5672;
