@@ -8,6 +8,8 @@ import net.moznion.random.string.RandomStringGenerator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.concurrent.TimeUnit;
+
 public class TestRabbitmqRpcProducer {
     private static final Logger logger = LogManager.getLogger();
 
@@ -18,36 +20,44 @@ public class TestRabbitmqRpcProducer {
         final RandomStringGenerator generator = new RandomStringGenerator();
 
         try (RabbitmqRpcProducer rpcProducer = new RabbitmqRpcProducer()) {
-            int countOfSendedMessages = 0;
+            int totalCountOfSendedMessages = 0;
             long totalSendTime = 0;
 
             long timeOfLastUpdate = 0;
-            while (true) {
-                long sendingStartTime = System.currentTimeMillis();
+            int countOfRpcInSec = 0;
 
-                logger.info("Generate random string...");
+            while (true) {
+                //logger.info("Generate random string...");
                 TextPojo textPojo = new TextPojo();
                 textPojo.text = generator.generateFromPattern(stringPattern);
                 try {
-                    logger.info(
+                    long sendingStartTime = System.currentTimeMillis();
+
+                    /*logger.info(
                         "Emit to \"" + rpcProducer.getRequestQueueName() + "\" message: \"" + textPojo.text +
-                        "\"");
+                        "\"");*/
                     TokenizedTextPojo tokenizedTextPojo = rpcProducer.call(textPojo);
-                    logger.info("In thread " + Thread.currentThread().getId() + " receive: \"" +
-                                tokenizedTextPojo.words.toString() + "\"");
+                    /*logger.info("In thread " + Thread.currentThread().getId() + " receive: \"" +
+                                tokenizedTextPojo.words.toString() + "\"");*/
+
+                    long currentTime = System.currentTimeMillis();
+
+                    long sendTime = currentTime - sendingStartTime;
+
+                    totalSendTime += sendTime;
+
+                    totalCountOfSendedMessages++;
+                    countOfRpcInSec++;
+                    if (currentTime - timeOfLastUpdate > TimeUnit.SECONDS.toMillis(1)) {
+                        logger.info("Average send time: " +
+                                    (double) (totalSendTime / totalCountOfSendedMessages) + " ms.");
+                        logger.info("Count of RPC's in second: " + countOfRpcInSec);
+
+                        timeOfLastUpdate = currentTime;
+                        countOfRpcInSec = 0;
+                    }
                 } catch (Exception exception) {
                     logger.fatal("Fail!", exception);
-                }
-
-                long currentTime = System.currentTimeMillis();
-
-                long sendTime = currentTime - sendingStartTime;
-                totalSendTime += sendTime;
-
-                countOfSendedMessages++;
-                if (currentTime - timeOfLastUpdate > 1000) {
-                    timeOfLastUpdate = currentTime;
-                    System.out.println("Average send time: " + (totalSendTime / countOfSendedMessages) + " ms.");
                 }
             }
         } catch (Exception exception) {

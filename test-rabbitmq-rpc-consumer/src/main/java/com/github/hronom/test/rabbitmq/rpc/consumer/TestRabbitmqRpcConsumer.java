@@ -51,7 +51,7 @@ public class TestRabbitmqRpcConsumer {
         consumer = new QueueingConsumer(channel);
         channel.basicConsume(requestQueueName, false, consumer);
 
-        System.out.println("[x] Awaiting RPC requests");
+        logger.info("[x] Awaiting RPC requests");
 
         while (true) {
             QueueingConsumer.Delivery delivery = consumer.nextDelivery();
@@ -59,7 +59,7 @@ public class TestRabbitmqRpcConsumer {
             AMQP.BasicProperties props = delivery.getProperties();
             TextPojo textPojo = (TextPojo) SerializationUtils.deserialize(delivery.getBody());
 
-            System.out.println("[.] " + textPojo.text);
+            //logger.info("[.] " + textPojo.text);
 
             TokenizedTextPojo tokenizedTextPojo = new TokenizedTextPojo();
             tokenizedTextPojo.words = new ArrayList<>();
@@ -67,7 +67,7 @@ public class TestRabbitmqRpcConsumer {
             while (matcher.find()) {
                 tokenizedTextPojo.words.add(matcher.group());
             }
-            System.out.println("Processed: " + tokenizedTextPojo.words.toString());
+            //logger.info("Processed: " + tokenizedTextPojo.words.toString());
 
             AMQP.BasicProperties replyProps = new AMQP.BasicProperties.Builder()
                 .correlationId(props.getCorrelationId()).build();
@@ -76,7 +76,7 @@ public class TestRabbitmqRpcConsumer {
 
             channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
 
-            //Thread.sleep(TimeUnit.SECONDS.toMillis(3));
+            //Thread.sleep(TimeUnit.SECONDS.toMillis(1));
         }
     }
 }
