@@ -1,6 +1,9 @@
 package com.github.hronom.test.rabbitmq.rapid.producer;
 
 import com.github.hronom.test.rabbitmq.common.pojos.TextPojo;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
 
 import net.moznion.random.string.RandomStringGenerator;
 
@@ -14,12 +17,36 @@ import java.util.concurrent.TimeoutException;
 public class TestRabbitmqRapidProducer {
     private static final Logger logger = LogManager.getLogger();
 
+    private static final String
+        stringPattern
+        = "Ccn!CCccCn!cccccccCn!!Ccccc!cc!ccccc!cccc!!Cc!C!C!Ccn!CCccCn!cccccccCn!!Ccccc!cc!ccccc!cccc!!Cc!C!C!Ccn!CCccCn!cccccccCn!!Ccccc!cc!ccccc!cccc!!Cc!C!C!Ccn!CCccCn!cccccccCn!!Ccccc!cc!ccccc!cccc!!Cc!C!C!Ccn!CCccCn!cccccccCn!!Ccccc!cc!ccccc!cccc!!Cc!C!C!Ccn!CCccCn!cccccccCn!!Ccccc!cc!ccccc!cccc!!Cc!C!C!";
+
+    private static final String requestQueueName = "test_rapid_queue";
+    private static final String routingKey = "simple_message";
+
+    private static final String rabbitMqHostname = "localhost";
+    private static final int rabbitMqPort = 5672;
+
+    private static final String rabbitMqUsername = "guest";
+    private static final String rabbitMqPassword = "guest";
+
+    private static Connection connection;
+    private static Channel channel;
+
     public static void main(String[] args) throws
         IOException,
         TimeoutException, InterruptedException {
-        final String
-            stringPattern
-            = "Ccn!CCccCn!cccccccCn!!Ccccc!cc!ccccc!cccc!!Cc!C!C!Ccn!CCccCn!cccccccCn!!Ccccc!cc!ccccc!cccc!!Cc!C!C!Ccn!CCccCn!cccccccCn!!Ccccc!cc!ccccc!cccc!!Cc!C!C!Ccn!CCccCn!cccccccCn!!Ccccc!cc!ccccc!cccc!!Cc!C!C!Ccn!CCccCn!cccccccCn!!Ccccc!cc!ccccc!cccc!!Cc!C!C!Ccn!CCccCn!cccccccCn!!Ccccc!cc!ccccc!cccc!!Cc!C!C!";
+
+        ConnectionFactory factory = new ConnectionFactory();
+        factory.setHost(rabbitMqHostname);
+        factory.setPort(rabbitMqPort);
+        factory.setUsername(rabbitMqUsername);
+        factory.setPassword(rabbitMqPassword);
+        connection = factory.newConnection();
+        channel = connection.createChannel();
+        channel.queueDeclare(requestQueueName, false, false, false, null);
+        channel.queueBind(requestQueueName, "amq.direct", routingKey);
+
         final RandomStringGenerator generator = new RandomStringGenerator();
 
         try (RabbitmqRapidProducer rapidProducer = new RabbitmqRapidProducer()) {
@@ -30,9 +57,14 @@ public class TestRabbitmqRapidProducer {
             int countOfMessagesInSec = 0;
 
             while (true) {
-                //logger.info("Generate random string...");
+                StringBuilder sb = new StringBuilder();
+                sb.append(generator.generateFromPattern(stringPattern));
+                for (int i = 0; i < 100_000; i++) {
+                    sb.append(i);
+                }
+
                 TextPojo textPojo = new TextPojo();
-                textPojo.text = generator.generateFromPattern(stringPattern);
+                textPojo.text = sb.toString();
                 try {
                     long sendingStartTime = System.currentTimeMillis();
 

@@ -15,7 +15,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 public class RabbitmqRapidProducer implements AutoCloseable {
-    private final String requestQueueName = "test_rapid_queue";;
+    private static final String requestQueueName = "test_rapid_queue";
+    private static final String routingKey = "simple_message";
 
     private final String rabbitMqHostname = "localhost";
     private final int rabbitMqPort = 5672;
@@ -35,6 +36,7 @@ public class RabbitmqRapidProducer implements AutoCloseable {
         connection = factory.newConnection();
         channel = connection.createChannel();
         channel.queueDeclare(requestQueueName, false, false, false, null);
+        channel.queueBind(requestQueueName, "amq.direct", routingKey);
     }
 
     @Override
@@ -55,9 +57,5 @@ public class RabbitmqRapidProducer implements AutoCloseable {
                 .build();
 
         channel.basicPublish("", requestQueueName, props, SerializationUtils.serialize(textPojo));
-    }
-
-    public String getRequestQueueName() {
-        return requestQueueName;
     }
 }
