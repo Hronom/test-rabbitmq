@@ -6,7 +6,6 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
-import com.rabbitmq.client.QueueingConsumer;
 import com.rabbitmq.client.ShutdownSignalException;
 
 import org.apache.logging.log4j.LogManager;
@@ -18,6 +17,9 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.LongAccumulator;
+import java.util.function.DoubleBinaryOperator;
+import java.util.function.LongBinaryOperator;
 
 public class TestRabbitmqRapidConsumer {
     private static final Logger logger = LogManager.getLogger();
@@ -46,40 +48,50 @@ public class TestRabbitmqRapidConsumer {
         channel.queueDeclare(requestQueueName, false, false, false, null);
         channel.queueBind(requestQueueName, "amq.direct", routingKey);
 
-        final AtomicLong totalCountOfSendedMessages = new AtomicLong(0);
+        final LongAccumulator
+            totalCountOfSendedMessages
+            = new LongAccumulator(new LongBinaryOperator() {
+            @Override
+            public long applyAsLong(long left, long right) {
+                return left + right;
+            }
+        }, 0);
 
         DefaultConsumer consumer = new DefaultConsumer(channel) {
             @Override
             public void handleCancelOk(String consumerTag) {
-                System.out.println("no work to do 1");
+                System.out.println("handleCancelOk");
             }
 
             @Override
             public void handleCancel(String consumerTag) throws IOException {
-                System.out.println("no work to do 2");
+                System.out.println("handleCancel");
             }
 
             @Override
             public void handleShutdownSignal(String consumerTag, ShutdownSignalException sig) {
-                System.out.println("no work to do 3");
+                System.out.println("handleShutdownSignal");
             }
 
             @Override
             public void handleRecoverOk(String consumerTag) {
-                System.out.println("no work to do 4");
+                System.out.println("handleRecoverOk");
             }
 
             @Override
             public void handleDelivery(
-                String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body
+                String consumerTag,
+                Envelope envelope,
+                AMQP.BasicProperties properties,
+                byte[] body
             ) throws IOException {
                 try {
                     //TextPojo textPojo = (TextPojo) SerializationUtils.deserialize(delivery.getBody());
                     //logger.info("[.] " + textPojo.text);
                     //channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
-                    Thread.sleep(TimeUnit.MILLISECONDS.toMillis(200));
+                    Thread.sleep(TimeUnit.MILLISECONDS.toMillis(300));
 
-                    totalCountOfSendedMessages.incrementAndGet();
+                    totalCountOfSendedMessages.accumulate(1);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -91,7 +103,7 @@ public class TestRabbitmqRapidConsumer {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                logger.info("Count of consumed messages: " + totalCountOfSendedMessages.getAndSet(0));
+                logger.info("Count of consumed messages: " + totalCountOfSendedMessages.getThenReset());
             }
         }, TimeUnit.SECONDS.toMillis(1), TimeUnit.SECONDS.toMillis(1));
     }
